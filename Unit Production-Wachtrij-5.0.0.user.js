@@ -108,7 +108,7 @@
         return `
             ${renderGroup("Land Units", LAND)}
             ${renderGroup("Naval Units", NAVAL)}
-            ${renderGroup("Myth Units", MYTH)}
+            ${renderGroup("Mythical Units", MYTH)}
         `;
     }
 
