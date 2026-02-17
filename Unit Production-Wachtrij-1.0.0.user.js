@@ -1,8 +1,7 @@
 // ==UserScript==
 // @name         Unit Production/Wachtrij
 // @version      1.0.0
-// @description  Troop queue grouped + correct remaining + event driven updates
-// @author       The Invincble
+// @description  True real-time troop queue (correct dynamic calculation)
 // @include      https://*.grepolis.com/game/*
 // @grant        none
 // ==/UserScript==
@@ -12,34 +11,35 @@
     const sleep = (n) => new Promise(res => setTimeout(res, n));
     await sleep(1500);
 
-    const STORAGE_KEY = "wachtrij_settings_v4";
     let lastSnapshot = "";
-    let listenerAttached = false;
-
-    const DEFAULT_SETTINGS = {
-        backgroundType: "none",
-        backgroundValue: "",
-        opacity: 0.6,
-        size: "cover"
-    };
-
-    const BUILTINS = {
-        ocean: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-        sand: "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
-        stone: "https://images.unsplash.com/photo-1501785888041-af3ef285b471"
-    };
-
-    function loadSettings() {
-        try {
-            return { ...DEFAULT_SETTINGS, ...JSON.parse(localStorage.getItem(STORAGE_KEY)) };
-        } catch {
-            return { ...DEFAULT_SETTINGS };
-        }
-    }
 
     /* =========================
-       CORE LOGIC
+       REAL-TIME CALCULATION
     ========================== */
+
+    function calculateRemaining(order) {
+
+        const now = Math.floor(Date.now() / 1000);
+        const a = order.attributes;
+
+        if (now < a.created_at) {
+            // Not started yet
+            return a.count;
+        }
+
+        if (now >= a.to_be_completed_at) {
+            // Finished
+            return 0;
+        }
+
+        // Currently training
+        const duration = a.to_be_completed_at - a.created_at;
+        const timePerUnit = duration / a.count;
+        const elapsed = now - a.created_at;
+        const completed = Math.floor(elapsed / timePerUnit);
+
+        return Math.max(a.count - completed, 0);
+    }
 
     function get_units() {
 
@@ -49,7 +49,9 @@
         const units = {};
 
         Object.values(models).forEach(order => {
-            const remaining = order.attributes.units_left;
+
+            const remaining = calculateRemaining(order);
+
             if (remaining > 0) {
                 const unitId = order.getUnitId();
                 units[unitId] = (units[unitId] || 0) + remaining;
@@ -104,62 +106,17 @@
         `;
     }
 
-    function makeContentHtml(content) {
-        return `
-            <div style="padding:20px 24px; color:#3a2a12;">
-                <div id="wachtrijContent">${content}</div>
-            </div>
-        `;
-    }
-
-    function getWindowContainer() {
-        const win = GPWindowMgr.getOpenFirst(GPWindowMgr.TYPE_DIALOG);
-        if (!win) return null;
-        return win.getJQElement().find(".gpwindow_content").get(0);
-    }
-
-    function applyBackground(container, settings) {
-        if (!container) return;
-
-        if (settings.backgroundType === "none") {
-            container.style.background = "";
-            return;
-        }
-
-        let url = settings.backgroundValue;
-        if (settings.backgroundType === "builtin") {
-            url = BUILTINS[url];
-        }
-
-        container.style.backgroundImage = `url("${url}")`;
-        container.style.backgroundPosition = "center center";
-        container.style.backgroundSize = settings.size === "stretch" ? "100% 100%" : settings.size;
-        container.style.backgroundRepeat = settings.size === "repeat" ? "repeat" : "no-repeat";
-    }
-
-    /* =========================
-       LIVE UPDATE (EVENT DRIVEN)
-    ========================== */
-
     function update_live_content() {
+
         const container = document.getElementById("wachtrijContent");
         if (!container) return;
 
         const newContent = get_units();
+
         if (newContent !== lastSnapshot) {
             container.innerHTML = newContent;
             lastSnapshot = newContent;
         }
-    }
-
-    function attachListeners() {
-        if (listenerAttached) return;
-
-        const collection = MM.getCollections()?.UnitOrder;
-        if (!collection) return;
-
-        collection.on("change add remove", update_live_content);
-        listenerAttached = true;
     }
 
     /* =========================
@@ -180,11 +137,11 @@
         const content = get_units();
         lastSnapshot = content;
 
-        w.setContent2(makeContentHtml(content));
-
-        applyBackground(getWindowContainer(), loadSettings());
-
-        attachListeners();
+        w.setContent2(`
+            <div style="padding:20px 24px; color:#3a2a12;">
+                <div id="wachtrijContent">${content}</div>
+            </div>
+        `);
     }
 
     /* =========================
@@ -215,6 +172,9 @@
         b.onclick = create_window;
         divwindow.appendChild(b);
     }
+
+    // Smart polling – stable & safe
+    setInterval(update_live_content, 60000);
 
     add_main_button();
 
