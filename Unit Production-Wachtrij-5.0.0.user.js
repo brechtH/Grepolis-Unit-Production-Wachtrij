@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Unit Production/Wachtrij
-// @version      13.0.0
+// @version      1.0.0
 // @description  Troop queue grouped + correct remaining + event driven updates
 // @author       The Invincble
 // @include      https://*.grepolis.com/game/*
