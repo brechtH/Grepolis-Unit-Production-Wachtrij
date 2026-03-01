@@ -4,6 +4,7 @@
 // @description  True real-time troop queue (correct dynamic calculation)
 // @include      https://*.grepolis.com/game/*
 // @grant        none
+// @author       The Invincble    
 // ==/UserScript==
 
 (async function () {
