@@ -5,6 +5,7 @@
 // @include      https://*.grepolis.com/game/*
 // @grant        none
 // @author       The Invincble    
+// @credits      Original concept by Egelman (Wachtrij script)
 // ==/UserScript==
 
 (async function () {
@@ -61,7 +62,7 @@
 
         const LAND = ["sword","slinger","archer","hoplite","rider","chariot","catapult"];
         const NAVAL = ["big_transporter","small_transporter","bireme","attack_ship","demolition_ship","trireme","colonize_ship"];
-        const MYTH = ["minotaur","manticore","medusa","harpy","cyclops","centaur","pegasus","hydra","cerberus","fury","griffin","satyr","spartoi","ladon","calydonian_boar","godsent"];
+        const MYTH = ["minotaur","manticore","medusa","harpy","cyclops","centaur","pegasus","hydra","cerberus","fury","griffin","satyr","spartoi","ladon","calydonian_boar","godsent","siren"];
 
         function renderGroup(title, unitList) {
 
