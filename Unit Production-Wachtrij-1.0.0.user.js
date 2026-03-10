@@ -4,9 +4,13 @@
 // @description  True real-time troop queue (correct dynamic calculation)
 // @include      https://*.grepolis.com/game/*
 // @grant        none
-// @author       The Invincble    
-// @credits      Original concept by Egelman (Wachtrij script)
+// @author       The Invincble
 // ==/UserScript==
+/*
+    Credits
+    -------
+    Original concept by Egelman (Wachtrij script)
+*/
 
 (async function () {
 
