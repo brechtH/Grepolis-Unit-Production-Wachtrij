@@ -47,10 +47,12 @@
                 if (document.getElementById('grepo_hub_btn')) return;
 
                 const btn = document.createElement("div");
-                btn.id = "grepo_hub_btn";
+                 btn.id = "grepo_hub_btn";
                 btn.className = "circle_button";
                 btn.style.marginTop = "55px";
+                btn.style.marginRight = "100%";
                 btn.style.position = "relative";
+                btn.title = "Script Hub";
 
                 btn.innerHTML = `
                     <img src="${HUB_ICON}"
@@ -61,6 +63,8 @@
                             top:50%;
                             left:50%;
                             transform:translate(-50%, -50%);
+                            pointer-events:none;
+
                         ">
                 `;
 
