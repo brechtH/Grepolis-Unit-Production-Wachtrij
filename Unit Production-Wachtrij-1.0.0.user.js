@@ -87,12 +87,14 @@
 
                     menu.style.position = "absolute";
                     menu.style.top = "150px";
+                    menu.style.right = "150px";
                     menu.style.background = "#2b1a0f";
                     menu.style.border = "2px solid #8b5a2b";
                     menu.style.borderRadius = "8px";
                     menu.style.padding = "6px";
                     menu.style.display = "none";
                     menu.style.zIndex = "9999";
+                    menu.style.minWidth = "180px";
 
                     document.body.appendChild(menu);
                 }
@@ -105,12 +107,7 @@
                         padding:6px;
                         cursor:pointer;
                     ">
-                        <div style="
-                            width:22px;
-                            height:22px;
-                            background:url('${i.icon}') no-repeat center;
-                            background-size:contain;
-                        "></div>
+                        <img src="${i.icon}" style="width:22px;height:22px;">
                         <span style="color:#fff;">${i.name}</span>
                     </div>
                 `).join('');
